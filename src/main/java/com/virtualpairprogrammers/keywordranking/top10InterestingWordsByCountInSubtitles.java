@@ -1,10 +1,6 @@
-package com.virtualpairprogrammers;
+package com.virtualpairprogrammers.keywordranking;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -13,12 +9,14 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
+import com.virtualpairprogrammers.Util;
+
 import scala.Tuple2;
 
-public class Main {
+public class top10InterestingWordsByCountInSubtitles {
 
-	public static void main(String[] args) {
-		
+	
+	public void calculateTop10InterestingWords() {
 		Logger.getLogger("org.apache").setLevel(Level.WARN);
 
 		SparkConf conf = new SparkConf().setAppName("startingSpark").setMaster("local[*]");
@@ -45,7 +43,6 @@ public class Main {
 		sorted.take(10).forEach(System.out:: println);
 		
 		sc.close();
-		
 	}
-
+	
 }
