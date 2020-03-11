@@ -1,4 +1,4 @@
-package com.virtualpairprogrammers;
+package com.virtualpairprogrammers.modules;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,13 +7,11 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
-public class Main {
+public class flatMapAndFilterRDD {
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public void flatMapAndFilterRdd() {
 
 		List<String> inputData = new ArrayList<>();
 		inputData.add("WARN: Tuesday 4 September 0405");
@@ -27,16 +25,13 @@ public class Main {
 		SparkConf conf = new SparkConf().setAppName("startingSpark").setMaster("local[*]");
 		JavaSparkContext sc = new JavaSparkContext(conf);
 
-		JavaRDD<String> sentences = sc.parallelize(inputData);
-		
-		JavaRDD<String> words = sentences.flatMap( value -> Arrays.asList(value.split(" ")).iterator());
-		
-		JavaRDD<String> filteredWords = words.filter(word -> word.length() > 1);
-		
-		filteredWords.collect().forEach(System.out::println);
-		
+		sc.parallelize(inputData)
+			.flatMap(value -> Arrays.asList(value.split(" "))
+			.iterator())
+			.filter(word -> word.length() > 1)
+			.collect().forEach(System.out::println);
+
 		sc.close();
-		
 	}
 
 }
