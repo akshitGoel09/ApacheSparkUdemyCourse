@@ -1,4 +1,4 @@
-package com.virtualpairprogrammers;
+package com.virtualpairprogrammers.courseTracker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +27,46 @@ public class ViewingFigures
 		JavaSparkContext sc = new JavaSparkContext(conf);
 		
 		// Use true to use hardcoded data identical to that in the PDF guide.
-		boolean testMode = true;
+		boolean testMode = false;
 		
 		JavaPairRDD<Integer, Integer> viewData = setUpViewDataRdd(sc, testMode);
 		JavaPairRDD<Integer, Integer> chapterData = setUpChapterDataRdd(sc, testMode);
 		JavaPairRDD<Integer, String> titlesData = setUpTitlesDataRdd(sc, testMode);
 
-		// TODO - over to you!
+		
+//		Utils.printJavaRDD(viewData);
+//		Utils.printJavaRDD(chapterData);
+//		Utils.printJavaRDD(titlesData);
+		
+		JavaPairRDD<Integer, Integer> courseToChapterRDD = chapterData.mapToPair((p) -> new Tuple2<Integer, Integer>(p._2, 1))
+				.reduceByKey((v1, v2) -> v1 + v2);
+		
+		JavaPairRDD<Integer, Integer> courseTotalScoreRDD = viewData.distinct()
+				.mapToPair((t) -> new Tuple2<>(t._2,t._1))
+				.join(chapterData)
+				.mapToPair( t -> new Tuple2<>(t._2, 1L))
+				.reduceByKey((v1, v2) -> v1 + v2)
+				.mapToPair(t -> new Tuple2<>(t._1._2, t._2))
+				.join(courseToChapterRDD)
+				.mapToPair(t -> {
+					int score = 0;
+					double percent = (t._2._1*100.0)/(double)t._2._2;
+					if(percent > 90) {
+						score = 10;
+					}else if(percent >50 && percent <= 90) {
+						score = 4;
+					}else if(percent > 25 && percent <= 50) {
+						score = 2;
+					}else {
+						score = 0;
+					}
+					return new Tuple2<>(t._1, score);
+				}).reduceByKey((v1 , v2) -> v1 + v2);
+		
+		JavaPairRDD<Integer, String> finalRdd = titlesData.join(courseTotalScoreRDD)
+				 .mapToPair((t) -> new Tuple2<>(t._2._2, t._2._1)).sortByKey(false);
+		 
+		 Utils.printJavaRDD(finalRdd);
 		
 		sc.close();
 	}
