@@ -2,6 +2,7 @@ package com.virtualpairprogrammers.courseTracker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -67,6 +68,9 @@ public class ViewingFigures
 				 .mapToPair((t) -> new Tuple2<>(t._2._2, t._2._1)).sortByKey(false);
 		 
 		 Utils.printJavaRDD(finalRdd);
+		 
+		 Scanner scanner = new Scanner(System.in);
+		 scanner.nextLine();
 		
 		sc.close();
 	}
@@ -116,7 +120,7 @@ public class ViewingFigures
 													  .mapToPair(commaSeparatedLine -> {
 															String[] cols = commaSeparatedLine.split(",");
 															return new Tuple2<Integer, Integer>(new Integer(cols[0]), new Integer(cols[1]));
-													  	});
+													  	}).cache();
 	}
 
 	private static JavaPairRDD<Integer, Integer> setUpViewDataRdd(JavaSparkContext sc, boolean testMode) {
