@@ -18,9 +18,9 @@ public class Main {
 		SparkConf conf = new SparkConf().setAppName("startingSpark").setMaster("local[*]");
 		JavaSparkContext sc = new JavaSparkContext(conf);
 		
-		JavaRDD<String> initialRdd =  sc.textFile("src/main/resources/subtitles/input.txt");
+		JavaRDD<String> rdd =  sc.textFile("src/main/resources/subtitles/input.txt");
 		
-		JavaPairRDD<String, Integer> pairRdd = initialRdd.mapToPair(v -> new Tuple2<>(v, 1));
+		JavaPairRDD<String, Integer> pairRdd = rdd.mapToPair(v -> new Tuple2<>(v, 1));
 		
 		
 		sc.close();
